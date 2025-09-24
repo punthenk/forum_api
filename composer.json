@@ -1,0 +1,14 @@
+{
+    "name": "punthenk/forum_api",
+    "authors": [
+        {
+            "name": "punthenk"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/"
+        }
+    }
+}
