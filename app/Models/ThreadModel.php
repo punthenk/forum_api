@@ -40,9 +40,9 @@ class ThreadModel {
             VALUES (:user_id, :title, :description)
         ";
         Database::query($query, [
-            "user_id" => $data['user_id'],
-            "title" => $data['title'],
-            "description" => $data['description'],
+            ":user_id" => $data['user_id'],
+            ":title" => $data['title'],
+            ":description" => $data['description'],
         ]);
         $lastID = Database::lastInsertId();
 
