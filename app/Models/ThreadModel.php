@@ -55,18 +55,28 @@ class ThreadModel {
             die("There was no id given");
         }
 
+        $updateableFields = ['title', 'description'];
+        $setParts = [];
+        $params = ['id' => $data['id'], 'updated_at' => date('Y-m-d H:i:s')];
+
+        foreach ($updateableFields as $field) {
+            if (isset($data[$field]) && !empty($data[$field])) {
+                $setParts[] = "$field = :$field";
+                $params[$field] = $data[$field];
+            }
+        }
+
+        if (empty($setParts)) {
+            // Or set an error response 400
+            return false;
+        }
 
         $query = "
             UPDATE threads
-            SET user_id = :user_id, title = :title, description = :description,
+            SET " . implode(', ', $setParts) . ", updated_at = :updated_at
             WHERE id = :id
         ";
-        Database::query($query, [
-            "user_id" => $data['user_id'],
-            "title" => $data['title'],
-            "description" => $data['description'],
-            ":id" => $data['id'],
-        ]);
+        Database::query($query, $params);
         $lastID = Database::lastInsertId();
 
         return ['message' => 'Thread created', 'id' => $lastID] ?? [];

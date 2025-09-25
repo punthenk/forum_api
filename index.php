@@ -9,7 +9,7 @@ use App\Models\ThreadModel;
 
 $data = $_POST ?? null;
 
-$data = ThreadModel::create($data);
+$data = ThreadModel::update($data);
 echo '<pre>';
 print_r($data);
 
