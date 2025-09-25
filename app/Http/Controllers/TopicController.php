@@ -2,24 +2,24 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ThreadModel;
+use App\Models\TopicModel;
 
-class ThreadController {
+class TopicController {
 
     public function index():bool|array {
-        return ThreadModel::getAll();
+        return TopicModel::getAll();
     }
 
     public function show(int $id):bool|array {
-        return ThreadModel::find($id);
+        return TopicModel::find($id);
     }
     
     public function create(array $data):bool|array {
-        return ThreadModel::create($data);
+        return TopicModel::create($data);
     }
 
     public function update(array $data):bool|array {
-        return ThreadModel::update($data);
+        return TopicModel::update($data);
     }
 }
 
