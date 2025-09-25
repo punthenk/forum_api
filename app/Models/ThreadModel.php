@@ -77,8 +77,7 @@ class ThreadModel {
             WHERE id = :id
         ";
         Database::query($query, $params);
-        $lastID = Database::lastInsertId();
 
-        return ['message' => 'Thread created', 'id' => $lastID] ?? [];
+        return ['message' => 'Thread updated', 'id' => $data['id']] ?? [];
     }
 }
