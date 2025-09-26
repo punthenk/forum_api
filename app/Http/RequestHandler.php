@@ -5,21 +5,40 @@ namespace App\Http;
 class RequestHandler {
 
     private const GET = 'GET';
+    private const POST = 'POST';
+    private const PUT = 'PUT';
 
-    private $request_type;
+    private $routes;
+    private $recoures;
 
-    private function handleGetRequest() {
-        echo 'getrequest'; 
+    public function __construct($routes) {
+        $this->routes = $routes;
+
     }
 
-    public function handleRequest():void {
-        switch ($this->request_type) {
-            case RequestHandler::GET:
-                $this->handleGetRequest();
-                break;
-            default:
-                echo "hello";
-                break;
+    public function getCleanURI():?array {
+
+        $uri = $_SERVER['REQUEST_URI'];
+        $uri = trim($uri, '/');
+
+        if ($uri === '') {
+            return ['route' => '/', 'id' => null];
+        }
+
+        $parts = explode('/', $uri);
+        $route = $parts[0];
+        $id = isset($parts[1]) ? $parts[1] : null;
+
+        $return = ['route' => $route, 'id' => $id];
+        print_r($return);
+
+        return ['route' => $route, 'id' => $id];
+    }
+
+    public function findRoute(string $method, string $uri):?array {
+
+        if (!isset($this->routes[$method])) {
+            return null;
         }
     }
 }
