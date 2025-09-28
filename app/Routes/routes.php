@@ -7,9 +7,9 @@ return [
         'threads' => [App\Http\Controllers\ThreadController::class, 'index'],
         'thread' => [App\Http\Controllers\ThreadController::class, 'find'],
         'topics' => [App\Http\Controllers\TopicController::class, 'index'],
-        'topic' => [App\Http\Controllers\TopicController::class, 'index'],
+        'topic' => [App\Http\Controllers\TopicController::class, 'find'],
         'replies' => [App\Http\Controllers\ReplyController::class, 'index'],
-        'reply' => [App\Http\Controllers\ReplyController::class, 'index'],
+        'reply' => [App\Http\Controllers\ReplyController::class, 'find'],
     ],
     // Create
     'POST' => [
