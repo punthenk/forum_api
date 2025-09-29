@@ -10,7 +10,7 @@ class ReplyController {
         return ReplyModel::getAll();
     }
 
-    public function show(int $id):bool|array {
+    public function find(int $id):bool|array {
         return ReplyModel::find($id);
     }
     
@@ -18,4 +18,3 @@ class ReplyController {
         return ReplyModel::create($data);
     }
 }
-
