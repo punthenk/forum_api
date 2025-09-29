@@ -18,7 +18,7 @@ return [
         'reply' => [App\Http\Controllers\ReplyController::class, 'create'],
     ],
     // Update
-    'PUT' => [
+    'PATCH' => [
         'thread' => [App\Http\Controllers\ThreadController::class, 'update'],
         'topic' => [App\Http\Controllers\TopicController::class, 'update'],
         'reply'  => [App\Http\Controllers\ReplyController::class, 'update'],
