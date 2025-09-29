@@ -10,7 +10,7 @@ class TopicController {
         return TopicModel::getAll();
     }
 
-    public function show(int $id):bool|array {
+    public function find(int $id):bool|array {
         return TopicModel::find($id);
     }
     

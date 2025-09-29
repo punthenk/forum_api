@@ -10,7 +10,7 @@ class ThreadController {
         return ThreadModel::getAll();
     }
 
-    public function show(int $id):bool|array {
+    public function find(int $id):bool|array {
         return ThreadModel::find($id);
     }
     
