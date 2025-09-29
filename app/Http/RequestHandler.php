@@ -2,6 +2,9 @@
 
 namespace App\Http;
 
+use ApiResponse as ApiResponseApiResponse;
+use App\Http\ApiResponse;
+
 class RequestHandler {
 
     private const GET = 'GET';
@@ -25,12 +28,12 @@ class RequestHandler {
             $this->handle404();
         }
 
-        $this->getCleanURI();
+        $this->setDataFromURI();
         $this->handleRequest();
 
     }
 
-    public function getCleanURI():void {
+    public function setDataFromURI():void {
 
         $uri = $_SERVER['REQUEST_URI'];
         $uri = trim($uri, '/');
@@ -56,40 +59,22 @@ class RequestHandler {
         }
     }
 
-    public function findRoute(string $httpRequestType, ?array $uriData):?array {
+    public function findRoute():?array {
 
-        if (!isset($this->routes[$httpRequestType])) {
-            return null;
+        if (!isset($this->httpRequestMethod)) {
+            ApiResponse::sendResponse(['message' => 'Not found'], ApiResponse::HTTP_STATUS_BAD_REQUEST, 'Not found');
+            die();
         }
 
-        $route = $uriData['route'];
-        /* $id = $uriData['id']; */
+        $route = $this->recoures['route'];
 
-        $controllerRoute = $this->routes[$httpRequestType][$route];
+        $controllerRoute = $this->routes[$this->httpRequestMethod][$route];
         return $controllerRoute;
-    }
-
-    private function executeController($controllerClass, $method, $id = null):bool {
-        $controller = new $controllerClass;
-        /* var_dump($controller, $method); */
-        
-        if (!method_exists($controller, $method)) {
-            echo "The method does not exist";
-            return false;
-        }
-
-        if ($id !== null) {
-            $controller->$method($id);
-        } else {
-            $controller->$method();
-        }
-
-        return true;
     }
 
     private function handleGetRequest():void {
 
-        $controllerClass = $this->findRoute($this->httpRequestMethod, $this->recoures);
+        $controllerClass = $this->findRoute();
 
         // This is the classname
         $className = $controllerClass[0];
@@ -97,24 +82,21 @@ class RequestHandler {
         $classMethod = $controllerClass[1];
 
         $controller = new $className;
-        var_dump($controller);
-        print_r($this->recoures['id']);
-        print_r($this->recoures['route']);
 
         if ($this->id !== 0 && $this->id !== null) {
-            $responeValue = $controller->$classMethod($this->id);
+            $responseValue = $controller->$classMethod($this->id);
         } else {
-            $responeValue = $controller->$classMethod();
+            $responseValue = $controller->$classMethod();
         }
 
         // We send the API resopse here
-        print_r($responeValue);
-
+        ApiResponse::sendResponse($responseValue);
+        die();
     }
 
     private function handlePostRequest():void {
 
-        $controllerClass = $this->findRoute($this->httpRequestMethod, $this->recoures);
+        $controllerClass = $this->findRoute();
 
         // This is the classname
         $className = $controllerClass[0];
@@ -124,19 +106,19 @@ class RequestHandler {
         $controller = new $className;
 
         $data = $_POST;
-        var_dump($classMethod);
 
         if ($data !== null && !empty($data)) {
             $responseValue = $controller->$classMethod($data);
         }
 
         // We send the API response here
-        print_r($responseValue);
+        ApiResponse::sendResponse($responseValue);
+        die();
     }
 
     private function handlePatchRequest():void {
 
-        $controllerClass = $this->findRoute($this->httpRequestMethod, $this->recoures);
+        $controllerClass = $this->findRoute();
 
         // This is the classname
         $className = $controllerClass[0];
@@ -148,15 +130,13 @@ class RequestHandler {
         $jsonData = file_get_contents('php://input');
         $data = json_decode($jsonData, true);
 
-        var_dump($jsonData);
-        var_dump($data);
-
         if ($data !== null && !empty($data)) {
             $responseValue = $controller->$classMethod($data);
         }
 
         // We send the API response here
-        print_r($responseValue);
+        ApiResponse::sendResponse($responseValue);
+        die();
     }
 
     private function handleRequest():void {
