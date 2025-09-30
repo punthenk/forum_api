@@ -48,4 +48,21 @@ class ReplyModel {
 
         return ['message' => 'Reply created', 'id' => $lastID] ?? [];
     }
+
+    public static function delete($id):bool|array {
+        if ($id === null) {
+            return false;
+        }
+
+        $query = "
+            DELETE FROM
+            replies
+            WHERE id = :id
+        ";
+
+        Database::query($query,
+            [":id" => $id]
+        );
+        return ['message' => 'Thread deleted', 'id' => $id] ?? null;
+    }
 }

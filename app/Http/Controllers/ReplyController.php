@@ -17,4 +17,8 @@ class ReplyController {
     public function create(array $data):bool|array {
         return ReplyModel::create($data);
     }
+
+    public function delete(int $id):bool|array {
+        return ReplyModel::delete($id);
+    }
 }
