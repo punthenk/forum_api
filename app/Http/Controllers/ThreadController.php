@@ -21,5 +21,9 @@ class ThreadController {
     public function update(array $data):bool|array {
         return ThreadModel::update($data);
     }
+
+    public function delete(int $id):bool|array {
+        return ThreadModel::delete($id);
+    }
 }
 
