@@ -23,5 +23,10 @@ return [
         'topic' => [App\Http\Controllers\TopicController::class, 'update'],
         'reply'  => [App\Http\Controllers\ReplyController::class, 'update'],
     ],
+    'DELETE' => [
+        'thread' => [App\Http\Controllers\ThreadController::class, 'delete'],
+        'topic' => [App\Http\Controllers\TopicController::class, 'delete'],
+        'reply'  => [App\Http\Controllers\ReplyController::class, 'delete'],
+    ],
 
 ];
