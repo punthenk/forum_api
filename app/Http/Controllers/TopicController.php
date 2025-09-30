@@ -21,5 +21,9 @@ class TopicController {
     public function update(array $data):bool|array {
         return TopicModel::update($data);
     }
+
+    public function delete(int $id):bool|array {
+        return TopicModel::delete($id);
+    }
 }
 

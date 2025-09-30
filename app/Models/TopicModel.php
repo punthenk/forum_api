@@ -82,5 +82,21 @@ class TopicModel {
         return ['message' => 'Topic updated', 'id' => $data['id']] ?? [];
     }
     
+    public static function delete($id):bool|array {
+        if ($id === null) {
+            return false;
+        }
+
+        $query = "
+            DELETE FROM
+            topics
+            WHERE id = :id
+        ";
+
+        Database::query($query,
+            [":id" => $id]
+        );
+        return ['message' => 'Thread deleted', 'id' => $id] ?? null;
+    }
 }
 
