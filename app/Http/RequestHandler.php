@@ -11,6 +11,7 @@ class RequestHandler {
     private const POST = 'POST';
     private const PUT = 'PUT';
     private const PATCH = 'PATCH';
+    private const DELETE = 'DELETE';
 
     private $routes;
     private $recoures;
@@ -139,6 +140,30 @@ class RequestHandler {
         die();
     }
 
+    private function handleDeleteRequest():void {
+
+        $controllerClass = $this->findRoute();
+
+        // This is the classname
+        $className = $controllerClass[0];
+        // This is the method name that needs to be called
+        $classMethod = $controllerClass[1];
+
+        $controller = new $className;
+
+        if ($this->id !== 0 && $this->id !== null) {
+            $responseValue = $controller->$classMethod($this->id);
+        } else {
+            ApiResponse::sendResponse([], ApiResponse::HTTP_STATUS_BAD_REQUEST, 'NO ID FOUND');
+            die();
+        } 
+
+        // We send the API response here
+        ApiResponse::sendResponse($responseValue);
+        die();
+
+    }
+
     private function handleRequest():void {
 
         switch ($this->httpRequestMethod) {
@@ -150,6 +175,9 @@ class RequestHandler {
                 break;
             case RequestHandler::PATCH:
                 $this->handlePatchRequest();
+                break;
+            case RequestHandler::DELETE:
+                $this->handleDeleteRequest();
                 break;
             
             default:
