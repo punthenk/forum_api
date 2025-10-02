@@ -18,6 +18,10 @@ class ReplyController {
         return ReplyModel::create($data);
     }
 
+    public function update(array $data):bool|array {
+        return ReplyModel::update($data);
+    }
+
     public function delete(int $id):bool|array {
         return ReplyModel::delete($id);
     }

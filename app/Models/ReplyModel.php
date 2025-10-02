@@ -49,6 +49,38 @@ class ReplyModel {
         return ['message' => 'Reply created', 'id' => $lastID] ?? [];
     }
 
+    public static function update($data):bool|array {
+        if ($data['id'] === null || empty($data['id'])) {
+            // Make an error respnose here 400
+            die("There was no id given");
+        }
+
+        $updateableFields = ['body'];
+        $setParts = [];
+        $params = ['id' => $data['id'], 'updated_at' => date('Y-m-d H:i:s')];
+
+        foreach ($updateableFields as $field) {
+            if (isset($data[$field]) && !empty($data[$field])) {
+                $setParts[] = "$field = :$field";
+                $params[$field] = $data[$field];
+            }
+        }
+
+        if (empty($setParts)) {
+            // Or set an error response 400
+            return false;
+        }
+
+        $query = "
+            UPDATE replies
+            SET " . implode(', ', $setParts) . ", updated_at = :updated_at
+            WHERE id = :id
+        ";
+        Database::query($query, $params);
+
+        return ['message' => 'Thread updated', 'id' => $data['id']] ?? [];
+    }
+
     public static function delete($id):bool|array {
         if ($id === null) {
             return false;
