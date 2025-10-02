@@ -57,11 +57,10 @@ class Database
         try {
             self::$dbStatement = self::$dbConnection->prepare($query);
             self::$dbStatement->execute($params);
+            return self::$dbStatement->rowCount();
         } catch (PDOException $e) {
             return $e;
         }
-
-        return true;
     }
 
     public static function get($return_type = PDO::FETCH_OBJ): bool|Object|array

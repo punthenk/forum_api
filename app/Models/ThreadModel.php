@@ -87,14 +87,20 @@ class ThreadModel {
         }
 
         $query = "
-            DELETE FROM
-            threads
-            WHERE id = :id
+            DELETE FROM threads 
+            WHERE id = :id;
+            SELECT ROW_COUNT() 
+            AS deleted_rows;
         ";
 
-        Database::query($query,
+        $deleted = Database::query($query,
             [":id" => $id]
         );
-        return ['message' => 'Thread deleted', 'id' => $id] ?? null;
+
+        if ($deleted > 0) {
+            return ['message' => 'Thread deleted', 'id' => $id];
+        } else {
+            return ['message' => 'Thread could not be deleted', 'id' => $id];
+        }
     }
 }
