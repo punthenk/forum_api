@@ -133,6 +133,9 @@ class RequestHandler {
 
         if ($data !== null && !empty($data)) {
             $responseValue = $controller->$classMethod($data);
+        } else {
+            ApiResponse::sendResponse([], ApiResponse::HTTP_STATUS_BAD_REQUEST, 'NO ID FOUND');
+            die();
         }
 
         // We send the API response here
