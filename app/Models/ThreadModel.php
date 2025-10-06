@@ -107,7 +107,7 @@ class ThreadModel {
         if ($deleted > 0) {
             return ['message' => 'Thread deleted', 'id' => $id];
         } else {
-            return ['message' => 'Thread could not be deleted', 'id' => $id];
+            throw new Exception('Thread could not be deleted');
         }
     }
 }

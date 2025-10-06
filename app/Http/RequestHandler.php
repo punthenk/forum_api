@@ -147,7 +147,7 @@ class RequestHandler {
         }
 
         // We send the API response here
-        ApiResponse::sendResponse($responseValue);
+        ApiResponse::sendResponse($responseValue, ApiResponse::HTTP_STATUS_CREATED, 'CREATED');
         die();
     }
 
@@ -199,16 +199,26 @@ class RequestHandler {
 
         $controller = new $className;
 
-        if ($this->id !== 0 && $this->id !== null) {
-            $responseValue = $controller->$classMethod($this->id);
-        } else {
-            ApiResponse::sendResponse([], ApiResponse::HTTP_STATUS_BAD_REQUEST, 'NO ID FOUND');
-            die();
-        } 
+        try {
+            if ($this->id !== 0 && $this->id !== null) {
+                $responseValue = $controller->$classMethod($this->id);
+            } else {
+                ApiResponse::sendResponse([], ApiResponse::HTTP_STATUS_BAD_REQUEST, 'NO ID FOUND');
+                die();
+            } 
 
-        // We send the API response here
-        ApiResponse::sendResponse($responseValue);
-        die();
+            // We send the API response here
+            ApiResponse::sendResponse($responseValue);
+            die();
+        } catch (Exception $e) {
+            ApiResponse::sendResponse(
+                ['error' => $e->getMessage()], 
+                ApiResponse::HTTP_STATUS_BAD_REQUEST, 
+                'Delete Failed'
+            );           
+            die();
+        }
+
 
     }
 

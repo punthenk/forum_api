@@ -96,12 +96,19 @@ class ReplyModel {
         $query = "
             DELETE FROM
             replies
-            WHERE id = :id
+            WHERE id = :id;
+            SELECT ROW_COUNT() 
+            AS deleted_rows;
         ";
 
-        Database::query($query,
+        $deleted = Database::query($query,
             [":id" => $id]
         );
-        return ['message' => 'Thread deleted', 'id' => $id] ?? null;
+
+        if ($deleted > 0) {
+            return ['message' => 'Reply deleted', 'id' => $id];
+        } else {
+            throw new Exception('Reply could not be deleted');
+        }
     }
 }

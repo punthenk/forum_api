@@ -97,13 +97,20 @@ class TopicModel {
         $query = "
             DELETE FROM
             topics
-            WHERE id = :id
+            WHERE id = :id;
+            SELECT ROW_COUNT() 
+            AS deleted_rows;
         ";
 
-        Database::query($query,
+        $deleted = Database::query($query,
             [":id" => $id]
         );
-        return ['message' => 'Thread deleted', 'id' => $id] ?? null;
+
+        if ($deleted > 0) {
+            return ['message' => 'Topic deleted', 'id' => $id];
+        } else {
+            throw new Exception('Topic could not be deleted');
+        }
     }
 }
 
