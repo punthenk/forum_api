@@ -4,6 +4,7 @@ namespace App\Http;
 
 use App\Http\ApiResponse;
 use ArgumentCountError;
+use Exception;
 
 class RequestHandler {
 
@@ -154,16 +155,27 @@ class RequestHandler {
         $jsonData = file_get_contents('php://input');
         $data = json_decode($jsonData, true);
 
-        if ($data !== null && !empty($data)) {
-            $responseValue = $controller->$classMethod($data);
-        } else {
-            ApiResponse::sendResponse([], ApiResponse::HTTP_STATUS_BAD_REQUEST, 'NO ID FOUND');
+        try {
+            if ($data !== null && !empty($data)) {
+                $responseValue = $controller->$classMethod($data);
+            } else {
+                ApiResponse::sendResponse(['error' => 'No id given'], ApiResponse::HTTP_STATUS_BAD_REQUEST, 'NO ID FOUND');
+                die();
+            }
+
+            // We send the API response here
+            ApiResponse::sendResponse($responseValue);
+            die();
+        } catch (Exception $e) {
+            ApiResponse::sendResponse(
+                ['error' => $e->getMessage()], 
+                ApiResponse::HTTP_STATUS_BAD_REQUEST, 
+                'Update Failed'
+            );           
             die();
         }
 
-        // We send the API response here
-        ApiResponse::sendResponse($responseValue);
-        die();
+
     }
 
     private function handleDeleteRequest():void {

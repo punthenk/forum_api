@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Database\Database;
+use Exception;
 
 class ReplyModel {
 
@@ -74,11 +75,17 @@ class ReplyModel {
         $query = "
             UPDATE replies
             SET " . implode(', ', $setParts) . ", updated_at = :updated_at
-            WHERE id = :id
+            WHERE id = :id;
+            SELECT ROW_COUNT()
+            AS updated_rows;
         ";
-        Database::query($query, $params);
+        $updated = Database::query($query, $params);
 
-        return ['message' => 'Thread updated', 'id' => $data['id']] ?? [];
+        if($updated > 0) {
+            return ['message' => 'Reply updated', 'id' => $data['id']];
+        } else {
+            throw new Exception('Reply could not be updated');
+        }
     }
 
     public static function delete($id):bool|array {
