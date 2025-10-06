@@ -2,7 +2,6 @@
 
 namespace App\Http;
 
-use ApiResponse as ApiResponseApiResponse;
 use App\Http\ApiResponse;
 
 class RequestHandler {
@@ -20,7 +19,8 @@ class RequestHandler {
 
     private $id;
 
-    public function __construct($routes) {
+
+    public function __construct(?array $routes) {
         $this->routes = $routes;
     }
 
