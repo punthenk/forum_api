@@ -3,6 +3,7 @@
 namespace App\Http;
 
 use App\Http\ApiResponse;
+use ArgumentCountError;
 
 class RequestHandler {
 
@@ -26,12 +27,10 @@ class RequestHandler {
 
     public function handle(): void {
         if (!isset($this->routes)) {
-            $this->handle404();
+            ApiResponse::sendResponse(['message' => 'Routes not found'], ApiResponse::HTTP_STATUS_NOT_FOUND, 'Not found');
         }
-
         $this->setDataFromURI();
         $this->handleRequest();
-
     }
 
     public function setDataFromURI():void {
@@ -44,6 +43,8 @@ class RequestHandler {
 
         if ($uri === '') {
             $this->recoures = ['route' => '/', 'id' => null];
+            ApiResponse::sendResponse(['message' => 'No specific route given'], ApiResponse::HTTP_STATUS_NO_CONTENT, 'NO CONTENT');
+            die();
         }
 
 
@@ -69,6 +70,15 @@ class RequestHandler {
 
         $route = $this->recoures['route'];
 
+        if (!isset($this->routes[$this->httpRequestMethod][$route])) {
+            ApiResponse::sendResponse(
+                ['error' => 'Route not found'],
+                ApiResponse::HTTP_STATUS_NOT_FOUND,
+                'Not Found'
+            );
+            die();
+        }
+
         $controllerRoute = $this->routes[$this->httpRequestMethod][$route];
         return $controllerRoute;
     }
@@ -84,15 +94,28 @@ class RequestHandler {
 
         $controller = new $className;
 
-        if ($this->id !== 0 && $this->id !== null) {
-            $responseValue = $controller->$classMethod($this->id);
-        } else {
-            $responseValue = $controller->$classMethod();
-        }
+        try {
+            if ($this->id !== 0 && $this->id !== null) {
+                $responseValue = $controller->$classMethod($this->id);
+            } else {
+                $responseValue = $controller->$classMethod();
+            }
 
-        // We send the API resopse here
-        ApiResponse::sendResponse($responseValue);
-        die();
+            if (empty($responseValue)) {
+                ApiResponse::sendResponse(['message' => 'No data found'], ApiResponse::HTTP_STATUS_NOT_FOUND, 'Resource not found');
+                die();
+            }
+
+            ApiResponse::sendResponse($responseValue);
+            die();
+
+        } catch (ArgumentCountError $e) {
+            ApiResponse::sendResponse(
+                ['error' => 'ID parameter is required for this endpoint'],
+                ApiResponse::HTTP_STATUS_BAD_REQUEST,
+                'Bad Request'
+            );
+        }
     }
 
     private function handlePostRequest():void {
