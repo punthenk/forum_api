@@ -103,7 +103,7 @@ class RequestHandler {
             }
 
             if (empty($responseValue)) {
-                ApiResponse::sendResponse(['message' => 'No data found'], ApiResponse::HTTP_STATUS_NOT_FOUND, 'Resource not found');
+                ApiResponse::sendResponse(['error' => 'No data found'], ApiResponse::HTTP_STATUS_NOT_FOUND, 'Resource not found');
                 die();
             }
 
@@ -132,8 +132,18 @@ class RequestHandler {
 
         $data = $_POST;
 
+        foreach ($data as $obj) {
+            if (!isset($obj) || empty($obj)) {
+                ApiResponse::sendResponse(['error' => 'Not all data found'], ApiResponse::HTTP_STATUS_NOT_FOUND, 'NOT ALL DATA');
+                die();
+            }
+        }
+
         if ($data !== null && !empty($data)) {
             $responseValue = $controller->$classMethod($data);
+        } else {
+            ApiResponse::sendResponse(['error' => 'No data found'], ApiResponse::HTTP_STATUS_NOT_FOUND, 'NO DATA');
+            die();
         }
 
         // We send the API response here
