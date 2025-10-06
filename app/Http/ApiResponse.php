@@ -38,11 +38,13 @@ class ApiResponse {
             'count' => count($data),
         ];
 
-        if ($code !== 0)
+        if ($code !== 0) {
             $response['status'] = $code;
+        }
 
-        if (!empty($message))
+        if (!empty($message)) {
             $response['status_message'] = $message;
+        }
 
         $response['data'] = $data;
 
