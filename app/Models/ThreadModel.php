@@ -31,7 +31,7 @@ class ThreadModel {
 
     public static function create($data):bool|array {
         if ($data === null || empty($data)) {
-            die("There was no data");
+            return false;
         }
 
         $query = "
