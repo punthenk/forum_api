@@ -5,9 +5,9 @@
    RewriteCond %{REQUEST_FILENAME} !-f
    RewriteCond %{REQUEST_FILENAME} !-d
 
-   # http://forum-api-2021.test/thread/1
+   # http://localhost/thread/1
    RewriteRule ^([^/]+)/([^/]+)/?$ index.php?resource=$1&id=$2 [L,QSA] 
 
-   # http://forum-api-2021.test/thread
+   # http://localhost/thread
    RewriteRule ^([^/\.]+)/?$ index.php?resource=$1 [L]
 </IfModule>
