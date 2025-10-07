@@ -28,14 +28,13 @@ class RequestHandler {
 
     public function handle(): void {
         if (!isset($this->routes)) {
-            ApiResponse::sendResponse(['message' => 'Routes not found'], ApiResponse::HTTP_STATUS_NOT_FOUND, 'Not found');
+            ApiResponse::sendResponse(['error' => 'Routes not found'], ApiResponse::HTTP_STATUS_NOT_FOUND, 'Not found');
         }
         $this->setDataFromURI();
         $this->handleRequest();
     }
 
     public function setDataFromURI():void {
-
         $uri = $_SERVER['REQUEST_URI'];
         $uri = trim($uri, '/');
 
@@ -63,9 +62,9 @@ class RequestHandler {
     }
 
     public function findRoute():?array {
-
+        // The http request (GET or POST for example) we send the BAD REQUEST status
         if (!isset($this->httpRequestMethod)) {
-            ApiResponse::sendResponse(['message' => 'Not found'], ApiResponse::HTTP_STATUS_BAD_REQUEST, 'Not found');
+            ApiResponse::sendResponse(['error' => 'Not found'], ApiResponse::HTTP_STATUS_BAD_REQUEST, 'Not found');
             die();
         }
 
@@ -80,12 +79,14 @@ class RequestHandler {
             die();
         }
 
+        // We find the controller route here and return it
         $controllerRoute = $this->routes[$this->httpRequestMethod][$route];
         return $controllerRoute;
     }
 
     private function handleGetRequest():void {
 
+        // We call the findRoute method to find the controllerClass to use
         $controllerClass = $this->findRoute();
 
         // This is the classname
@@ -93,15 +94,19 @@ class RequestHandler {
         // This is the method name that needs to be called
         $classMethod = $controllerClass[1];
 
+        // This is the new instance of the controller
         $controller = new $className;
 
         try {
+            // If the id is specified we will call the find method to find row with that id
+            // If there is no id than we just call the index method to get all the data
             if ($this->id !== 0 && $this->id !== null) {
                 $responseValue = $controller->$classMethod($this->id);
             } else {
                 $responseValue = $controller->$classMethod();
             }
 
+            // If we did not get any data we send the NOT FOUND status
             if (empty($responseValue)) {
                 ApiResponse::sendResponse(['error' => 'No data found'], ApiResponse::HTTP_STATUS_NOT_FOUND, 'Resource not found');
                 die();
@@ -110,6 +115,8 @@ class RequestHandler {
             ApiResponse::sendResponse($responseValue);
             die();
 
+            // If we catch an argument error that we called the index method but we dont get an id
+            // we send the BAD REQUEST status
         } catch (ArgumentCountError $e) {
             ApiResponse::sendResponse(
                 ['error' => 'ID parameter is required for this endpoint'],
@@ -121,6 +128,7 @@ class RequestHandler {
 
     private function handlePostRequest():void {
 
+        // We call the findRoute method to find the controllerClass to use
         $controllerClass = $this->findRoute();
 
         // This is the classname
@@ -128,12 +136,15 @@ class RequestHandler {
         // This is the method name that needs to be called
         $classMethod = $controllerClass[1];
 
+        // This is the new instance of the controller
         $controller = new $className;
 
         $data = $_POST;
 
+        // We check here if all the required data is'nt empty
         foreach ($data as $obj) {
             if (!isset($obj) || empty($obj)) {
+                // If one property is empty we give a status NOT FOUND
                 ApiResponse::sendResponse(['error' => 'Not all data found'], ApiResponse::HTTP_STATUS_NOT_FOUND, 'NOT ALL DATA');
                 die();
             }
@@ -153,6 +164,7 @@ class RequestHandler {
 
     private function handlePatchRequest():void {
 
+        // We call the findRoute method to find the controllerClass to use
         $controllerClass = $this->findRoute();
 
         // This is the classname
@@ -160,9 +172,13 @@ class RequestHandler {
         // This is the method name that needs to be called
         $classMethod = $controllerClass[1];
 
+
+        // This is the new instance of the controller
         $controller = new $className;
 
+        // Here we get the raw json data
         $jsonData = file_get_contents('php://input');
+        // We turn the json data into an array
         $data = json_decode($jsonData, true);
 
         try {
@@ -190,6 +206,7 @@ class RequestHandler {
 
     private function handleDeleteRequest():void {
 
+        // We call the findRoute method to find the controllerClass to use
         $controllerClass = $this->findRoute();
 
         // This is the classname
@@ -197,10 +214,14 @@ class RequestHandler {
         // This is the method name that needs to be called
         $classMethod = $controllerClass[1];
 
+        // This is the new instance of the controller
         $controller = new $className;
 
+        // We try to delete the row in the DB
+        // If we catch an error we will give a 400 response
         try {
             if ($this->id !== 0 && $this->id !== null) {
+                //We exectute the method here
                 $responseValue = $controller->$classMethod($this->id);
             } else {
                 ApiResponse::sendResponse([], ApiResponse::HTTP_STATUS_BAD_REQUEST, 'NO ID FOUND');
@@ -242,10 +263,6 @@ class RequestHandler {
                 $this->handleGetRequest();
                 break;
         }
-    }
-
-    private function handle404(): void {
-        echo "This is not good";
     }
 
 }
