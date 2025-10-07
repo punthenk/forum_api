@@ -53,7 +53,7 @@ class ReplyModel {
     public static function update($data):bool|array {
         if ($data['id'] === null || empty($data['id'])) {
             // Make an error respnose here 400
-            die("There was no id given");
+            return ['error' => 'No id given'];
         }
 
         $updateableFields = ['body'];
