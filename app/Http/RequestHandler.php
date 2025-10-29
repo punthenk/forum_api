@@ -10,17 +10,14 @@ class RequestHandler {
 
     private const GET = 'GET';
     private const POST = 'POST';
-    private const PUT = 'PUT';
     private const PATCH = 'PATCH';
     private const DELETE = 'DELETE';
 
     private $routes;
     private $recoures;
     private $httpRequestMethod;
-    private $parseUrl;
 
     private $id;
-
 
     public function __construct(?array $routes) {
         $this->routes = $routes;
@@ -220,7 +217,7 @@ class RequestHandler {
         // We try to delete the row in the DB
         // If we catch an error we will give a 400 response
         try {
-            if ($this->id !== 0 && $this->id !== null) {
+            if ($this->id !== 0 && $this->id !== null && gettype($this->id) === "integer") {
                 //We exectute the method here
                 $responseValue = $controller->$classMethod($this->id);
             } else {
@@ -239,7 +236,6 @@ class RequestHandler {
             );           
             die();
         }
-
 
     }
 
