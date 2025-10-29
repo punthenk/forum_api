@@ -2,10 +2,13 @@
 
 namespace App\Http;
 
+use App\Middleware\Auth;
+
 class ApiResponse {
 
     public const HTTP_NO_STATUS = 0;
     // SUCCESS CODES
+
     public const HTTP_STATUS_OK = 200;
     public const HTTP_STATUS_CREATED = 201;
     public const HTTP_STATUS_NO_CONTENT = 204;
@@ -31,7 +34,7 @@ class ApiResponse {
         header("HTTP/1.1 $code $message");
     }
 
-    private static function prepareResponse(?array $data, int $code = self::HTTP_NO_STATUS, string $message = ''):mixed {
+    private static function prepareResponse(?array $data, int $code = self::HTTP_NO_STATUS, string $message = '', string $token = ''):mixed {
         $response = [
             'api_version' => '1.0',
             'api_name' => 'punthenk_forum_api',
@@ -46,12 +49,15 @@ class ApiResponse {
             $response['status_message'] = $message;
         }
 
+        if ($token !== '') {
+            $response['authentication']['token'] = $token;
+        }
         $response['data'] = $data;
 
         return json_encode($response);
     }
 
-    public static function sendResponse(?array $data, int $code = self::HTTP_STATUS_OK, string $message = 'OK'):void {
+    public static function sendResponse(?array $data, int $code = self::HTTP_STATUS_OK, string $message = 'OK', string $token = ''):void {
         self::sendDefaultHeaders();
         self::sendStatusCode($code, $message);
         echo self::prepareResponse($data, $code, $message);

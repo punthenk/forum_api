@@ -16,6 +16,8 @@ return [
         'thread' => [App\Http\Controllers\ThreadController::class, 'create'],
         'topic' => [App\Http\Controllers\TopicController::class, 'create'],
         'reply' => [App\Http\Controllers\ReplyController::class, 'create'],
+        'register' => [App\Http\Controllers\AuthController::class, 'register'],
+        'login' => [App\Http\Controllers\AuthController::class, 'login'],
     ],
     // Update
     'PATCH' => [

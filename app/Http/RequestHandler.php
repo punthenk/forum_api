@@ -3,6 +3,7 @@
 namespace App\Http;
 
 use App\Http\ApiResponse;
+use App\Models\UserModel;
 use ArgumentCountError;
 use Exception;
 
@@ -30,6 +31,43 @@ class RequestHandler {
         $this->setDataFromURI();
         $this->handleRequest();
     }
+
+    private function checkValidRequest(): bool {
+        // We call the findRoute method to find the controllerClass to use
+        $controllerClass = $this->findRoute();
+
+        // This is the classname
+        $className = $controllerClass[0];
+        // This is the method name that needs to be called
+        $classMethod = $controllerClass[1];
+
+        if ($classMethod === "login" || $classMethod === "register") {
+            return true;
+        }
+
+        $token = $this->getAuthToken(); 
+
+        if (UserModel::findByToken($token)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private function getAuthToken(): ?string {
+        $headers = getallheaders();
+
+        if (isset($headers['Authorization'])) {
+            $authHeader = $headers['Authorization'];
+
+            if (preg_match('/Bearer\s+(.+)/i', $authHeader, $matches)) {
+                return $matches[1];
+            }
+        }
+
+        return null;
+    }
+
 
     public function setDataFromURI():void {
         $uri = $_SERVER['REQUEST_URI'];
@@ -240,6 +278,13 @@ class RequestHandler {
     }
 
     private function handleRequest():void {
+
+        if ($this->httpRequestMethod !== RequestHandler::GET) {
+            if ($this->checkValidRequest() === false) {
+                ApiResponse::sendResponse(['error' => 'Not authorized'], ApiResponse::HTTP_STATUS_UNAUTHORIZED, 'UNAUTHORIZED');
+                die();
+            }
+        }
 
         switch ($this->httpRequestMethod) {
             case RequestHandler::GET:
