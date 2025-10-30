@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\TopicModel;
+use Exception;
 
 class TopicController {
 
@@ -22,8 +23,15 @@ class TopicController {
         return TopicModel::update($data);
     }
 
-    public function delete(int $id):bool|array {
-        return TopicModel::delete($id);
+    public function delete(int $id, int $userId):bool|array {
+        $recourse = TopicModel::find($id);
+
+        if ($recourse[0]->user_id === $userId){
+            return TopicModel::delete($id);
+        } else {
+            throw new Exception('This user does not have permission to delete this recource');
+        }
+        return false;
     }
 }
 

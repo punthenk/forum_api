@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ThreadModel;
+use Exception;
 
 class ThreadController {
 
@@ -22,8 +23,15 @@ class ThreadController {
         return ThreadModel::update($data);
     }
 
-    public function delete(int $id):bool|array {
-        return ThreadModel::delete($id);
+    public function delete(int $id, int $userId):bool|array {
+        $recourse = ThreadModel::find($id);
+
+        if ($recourse[0]->user_id === $userId){
+            return ThreadModel::delete($id);
+        } else {
+            throw new Exception('This user does not have permission to delete this recource');
+        }
+        return false;
     }
 }
 

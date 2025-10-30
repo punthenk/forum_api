@@ -19,6 +19,7 @@ class RequestHandler {
     private $httpRequestMethod;
 
     private $id;
+    private $userId;
 
     public function __construct(?array $routes) {
         $this->routes = $routes;
@@ -51,7 +52,10 @@ class RequestHandler {
             die();
         }
 
-        if (UserModel::findByToken($token)) {
+        $userData = UserModel::findByToken($token);
+
+        if ($userData) {
+            $this->userId = $userData->id;
             return true;
         }
 
@@ -259,9 +263,9 @@ class RequestHandler {
         // We try to delete the row in the DB
         // If we catch an error we will give a 400 response
         try {
-            if ($this->id !== 0 && $this->id !== null && gettype($this->id) === "integer") {
+            if ($this->id !== 0 && $this->id !== null) {
                 //We exectute the method here
-                $responseValue = $controller->$classMethod($this->id);
+                $responseValue = $controller->$classMethod($this->id, $this->userId);
             } else {
                 ApiResponse::sendResponse([], ApiResponse::HTTP_STATUS_BAD_REQUEST, 'NO ID FOUND');
                 die();

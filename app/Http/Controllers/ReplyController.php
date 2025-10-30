@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ReplyModel;
+use Exception;
 
 class ReplyController {
 
@@ -22,7 +23,14 @@ class ReplyController {
         return ReplyModel::update($data);
     }
 
-    public function delete(int $id):bool|array {
-        return ReplyModel::delete($id);
+    public function delete(int $id, int $userId):bool|array {
+        $recourse = ReplyModel::find($id);
+
+        if ($recourse[0]->user_id === $userId){
+            return ReplyModel::delete($id);
+        } else {
+            throw new Exception('This user does not have permission to delete this recource');
+        }
+        return false;
     }
 }
