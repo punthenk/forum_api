@@ -46,6 +46,10 @@ class RequestHandler {
         }
 
         $token = $this->getAuthToken(); 
+        if ($token === null || empty($token) || !isset($token)) {
+            ApiResponse::sendResponse(['error' => 'There is no token given'], ApiResponse::HTTP_STATUS_BAD_REQUEST, 'NO TOKEN');
+            die();
+        }
 
         if (UserModel::findByToken($token)) {
             return true;
