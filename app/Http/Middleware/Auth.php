@@ -35,7 +35,7 @@ class Auth
             return ['error' => 'Could not find the user'];
         }
 
-        $expire_minutes = 5;
+        $expire_minutes = 30;
 
         $token_expire_date = new DateTime()->modify('+'.$expire_minutes.' minute')->format('Y-m-d H:i:s');
 
