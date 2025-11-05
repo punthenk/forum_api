@@ -22,6 +22,10 @@ class TopicController {
     public function update(array $data, int $userId):bool|array {
         $recourse = TopicModel::find($data['id']);
 
+        if ($recourse === null || empty($recourse) || !isset($recourse)) {
+            throw new Exception('Could not find the recourse');
+        }
+
         if ($recourse[0]->user_id === $userId){
             return TopicModel::update($data);
         } else {
@@ -32,6 +36,10 @@ class TopicController {
 
     public function delete(int $id, int $userId):bool|array {
         $recourse = TopicModel::find($id);
+
+        if ($recourse === null || empty($recourse) || !isset($recourse)) {
+            throw new Exception('Could not find the recourse');
+        }
 
         if ($recourse[0]->user_id === $userId){
             return TopicModel::delete($id);

@@ -22,6 +22,10 @@ class ThreadController {
     public function update(array $data, int $userId):bool|array {
         $recourse = ThreadModel::find($data['id']);
 
+        if ($recourse === null || empty($recourse) || !isset($recourse)) {
+            throw new Exception('Could not find the recourse');
+        }
+
         if ($recourse[0]->user_id === $userId){
             return ThreadModel::update($data);
         } else {
@@ -32,6 +36,10 @@ class ThreadController {
 
     public function delete(int $id, int $userId):bool|array {
         $recourse = ThreadModel::find($id);
+
+        if ($recourse === null || empty($recourse) || !isset($recourse)) {
+            throw new Exception('Could not find the recourse');
+        }
 
         if ($recourse[0]->user_id === $userId){
             return ThreadModel::delete($id);
