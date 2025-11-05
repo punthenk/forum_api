@@ -228,7 +228,7 @@ class RequestHandler {
 
         try {
             if ($data !== null && !empty($data)) {
-                $responseValue = $controller->$classMethod($data);
+                $responseValue = $controller->$classMethod($data, $this->userId);
             } else {
                 ApiResponse::sendResponse(['error' => 'No id given'], ApiResponse::HTTP_STATUS_BAD_REQUEST, 'NO ID FOUND');
                 die();
